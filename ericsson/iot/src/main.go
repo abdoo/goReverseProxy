@@ -62,11 +62,13 @@ func dialTLS(network, addr string) (net.Conn, error) {
 
 func main() {
 	// Getting Configuration from json file
-	config := GetConfig()
+	//config := GetConfig()
 
 	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
 		Scheme: "https",
-		Host:   config.AppiotURL,
+		//Host:   config.AppiotURL,
+		Host:   "kddiappiot.sensbysigma.com",
+
 	})
 
 	// Set a custom DialTLS to access the TLS connection state
@@ -80,10 +82,10 @@ func main() {
 	}
 
 	port := ":"
-	port += config.Port
+	//port += config.Port
+	port += "3000"
 
-	log.Fatal(http.ListenAndServeTLS(port, "ericsson/iot/resources/certificate.pem", "ericsson/iot/resources/key.pem", proxy))
-
-	//log.Fatal(http.ListenAndServe(port, proxy))
+	//log.Fatal(http.ListenAndServeTLS(port, "ericsson/iot/resources/certificate.pem", "ericsson/iot/resources/key.pem", proxy))
+	log.Fatal(http.ListenAndServe(port, proxy))
 }
 
