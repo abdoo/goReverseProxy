@@ -1,4 +1,4 @@
 {
-  "port" : "3000",
+  "port" : "8888",
   "appiot_url" : "kddiappiot.sensbysigma.com"
 }
