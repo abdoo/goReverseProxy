@@ -83,7 +83,7 @@ func main() {
 
 	port := ":"
 	//port += config.Port
-	port += "80"
+	port += "3000"
 
 	//log.Fatal(http.ListenAndServeTLS(port, "ericsson/iot/resources/certificate.pem", "ericsson/iot/resources/key.pem", proxy))
 	log.Fatal(http.ListenAndServe(port, proxy))
