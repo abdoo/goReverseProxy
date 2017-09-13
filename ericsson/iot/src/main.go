@@ -64,6 +64,13 @@ func main() {
 	// Getting Configuration from json file
 	//config := GetConfig()
 
+	//port += config.Port
+	port := "8888"
+
+	if os.Getenv("HTTP_PLATFORM_PORT") != "" {
+		port = os.Getenv("HTTP_PLATFORM_PORT")
+	}
+
 	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
 		Scheme: "https",
 		//Host:   config.AppiotURL,
@@ -81,13 +88,9 @@ func main() {
 		req.Host = req.URL.Host
 	}
 
-	port := ":"
-	//port += config.Port
-	port += "8888"
-
 	fmt.Printf("starting server\n")
 
 	//log.Fatal(http.ListenAndServeTLS(port, "ericsson/iot/resources/certificate.pem", "ericsson/iot/resources/key.pem", proxy))
-	log.Fatal(http.ListenAndServe(port, proxy))
+	log.Fatal(http.ListenAndServe(":"+port, proxy))
 }
 
