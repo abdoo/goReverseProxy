@@ -1,9 +1,7 @@
 package main
 
 import (
-	"crypto/tls"
 	"log"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -31,66 +29,28 @@ func GetConfig() *Config{
 	return &con
 }
 
-func dialTLS(network, addr string) (net.Conn, error) {
-	conn, err := net.Dial(network, addr)
-	if err != nil {
-		return nil, err
-	}
-
-	host, _, err := net.SplitHostPort(addr)
-	if err != nil {
-		return nil, err
-	}
-	cfg := &tls.Config{ServerName: host}
-
-	tlsConn := tls.Client(conn, cfg)
-	if err := tlsConn.Handshake(); err != nil {
-		conn.Close()
-		return nil, err
-	}
-
-	cs := tlsConn.ConnectionState()
-	cert := cs.PeerCertificates[0]
-
-	// Verify here
-	cert.VerifyHostname(host)
-	log.Println(cert.Subject)
-
-	return tlsConn, nil
-}
-
 
 func main() {
 	// Getting Configuration from json file
-	//config := GetConfig()
+	config := GetConfig()
 
-	//port += config.Port
-	port := "8888"
-
-	if os.Getenv("HTTP_PLATFORM_PORT") != "" {
-		port = os.Getenv("HTTP_PLATFORM_PORT")
-	}
+	port := config.Port
 
 	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
 		Scheme: "https",
-		//Host:   config.AppiotURL,
-		Host:   "kddiappiot.sensbysigma.com",
+		Host:   config.AppiotURL,
 
 	})
 
-	// Set a custom DialTLS to access the TLS connection state
-	proxy.Transport = &http.Transport{DialTLS: dialTLS}
-
-	// Change req.Host so badssl.com host check is passed
 	director := proxy.Director
 	proxy.Director = func(req *http.Request) {
 		director(req)
 		req.Host = req.URL.Host
 	}
 
+
 	fmt.Printf("starting server\n")
 
-	//log.Fatal(http.ListenAndServeTLS(port, "ericsson/iot/resources/certificate.pem", "ericsson/iot/resources/key.pem", proxy))
 	log.Fatal(http.ListenAndServe(":"+port, proxy))
 }
 
